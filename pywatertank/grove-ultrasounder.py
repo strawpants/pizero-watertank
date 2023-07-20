@@ -28,7 +28,7 @@ def getdistance(pin,speedofsound=340):
     
     #now the same pin is used to receive the observation as a pulse (where the length of the pulse is the measurement
     GPIO.setup(pin, GPIO.IN)
-    risedetect = GPIO.wait_for_edge(pin, GPIO.RISING,timeout=80)
+    risedetect = GPIO.wait_for_edge(pin, GPIO.RISING,timeout=100)
     tstart=time.time()        
     
     if risedetect == None:
@@ -60,7 +60,7 @@ def main():
                 print("Failed measurement")
             else:
                 print(f"travel time {dt}, distance {1e2*dist} cm")
-            time.sleep(2)
+            time.sleep(3)
         except KeyboardInterrupt:
             print("KeyboardInterrupt")
             sys.exit(0)
