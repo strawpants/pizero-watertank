@@ -30,9 +30,13 @@ def start_logging(sampling=60):
     newstate=LoggerState(time=datetime.now().astimezone(),action=LoggerState.Action.START,sampling=sampling,pid=os.getpid())
     newstate.save()
     sensorscol=SensorCollector()
+    #set very permitting bound for first run
+    ttimeoutlierbound=[800,12000]
     while True:
         logger.info("Taking new sensor sample")
-        sdict=sensorscol.sample()
+        sdict=sensorscol.sample(ttimeoutlierbound)
+        #Reject outliers falling ca 20cm (2 way) from previous estimate
+        ttimeoutlierbound=[sdict["traveltime"]-500,sdict["traveltime"]+500]
         sample=SensorData(**sdict)
         sample.save()
         time.sleep(sampling)

@@ -31,13 +31,15 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['wetcave']
+ALLOWED_HOSTS = ['wetcave','wetcave.wobbly.earth']
+#ALLOWED_HOSTS = ['0.0.0.0']
 
 
 # Application definition
 
 INSTALLED_APPS = [
     'remotecontrol.apps.RemotecontrolConfig',
+    'dashboard.apps.DashboardConfig',
     'sensors.apps.SensorsConfig',
     'django.contrib.admin',
     'django.contrib.auth',

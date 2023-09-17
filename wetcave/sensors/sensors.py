@@ -5,7 +5,7 @@ import time
 from logging import getLogger
 from statistics import mean,stdev
 from datetime import datetime
-
+from math import sqrt
 usleep = lambda x: time.sleep(x*1e-6)
 logger=getLogger(__name__)
 
@@ -15,7 +15,7 @@ _TIMEOUT2 = 10000
 class SensorCollector:
     sounderpin=24
     nbarosamples=10
-    nsoundersamples=10
+    nsoundersamples=15
     def __init__(self):
         self.pres_temp=hp206c()
         ret=self.pres_temp.isAvailable()
@@ -50,11 +50,12 @@ class SensorCollector:
                     
                     preslist.append(p)
                     templist.append(t)
-
+                
+                error_scale=1.0/sqrt(len(preslist)) 
                 pres=mean(preslist)
                 temp=mean(templist)
-                presstd=stdev(preslist)
-                tempstd=stdev(templist)
+                presstd=stdev(preslist)*error_scale
+                tempstd=stdev(templist)*error_scale
 
             return {"pressure":pres,"temperature":temp,"pressure_error":presstd,"temperature_error":tempstd}
 
@@ -90,22 +91,25 @@ class SensorCollector:
         dt = int((t1 - t0) * 1000000)
         if dt > 530:
             dt=None
+        traveltime=t2-t1
+        return traveltime*1e6
 
-        return dt
-
-    def sampleRange(self):
+    def sampleRange(self,outlierbounds=[800,12000]):
         dtlist=[]
         for i in range(self.nsoundersamples+1):
             dt=self.sampleRangeSingle()
             if dt == None:
                 #try again
                 continue
+            if dt < outlierbounds[0] or dt > outlierbounds[1]:
+                #outlier don't use in the computation of the mean
+                continue
             dtlist.append(dt)
-        
-        return {"traveltime":mean(dtlist),"traveltime_error":stdev(dtlist)}
+        error_scale=1.0/sqrt(len(dtlist)) 
+        return {"traveltime":mean(dtlist),"traveltime_error":stdev(dtlist)* error_scale}
 
-    def sample(self):
+    def sample(self,traveltime_outlierbounds=None):
         sensordict=self.sampleBaro()
-        sensordict.update(self.sampleRange())
+        sensordict.update(self.sampleRange(traveltime_outlierbounds))
         sensordict["epoch"]=datetime.now().astimezone()
         return sensordict
