@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% comment %}<link rel="stylesheet" href="style.css">{% endcomment %}
+    <title>{% block title %}My amazing site{% endblock %}</title>
+</head>
+
+<body>
+    {% comment %}<div id="sidebar">{% endcomment %}
+        {% comment %}{% block sidebar %}{% endcomment %}
+        {% comment %}<ul>{% endcomment %}
+            {% comment %}<li><a href="/">Home</a></li>{% endcomment %}
+            {% comment %}<li><a href="/blog/">Blog</a></li>{% endcomment %}
+        {% comment %}</ul>{% endcomment %}
+        {% comment %}{% endblock %}{% endcomment %}
+    {% comment %}</div>{% endcomment %}
+
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

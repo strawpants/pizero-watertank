@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %} Wetcave login{% endblock %}
+{% block content %}
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Log In to the wetcave</button>
+</form>
+{% endblock %}
