@@ -105,7 +105,13 @@ class SensorCollector:
                 #outlier don't use in the computation of the mean
                 continue
             dtlist.append(dt)
-        error_scale=1.0/sqrt(len(dtlist)) 
+        nsamples=len(dtlist)
+        if nsamples < 2:
+            #don't return data if the amount of data points is below the bare minimum
+            logger.info(f"Not enough samples for the range: {nsamples}")
+            return {}
+
+        error_scale=1.0/sqrt(nsamples) 
         return {"traveltime":mean(dtlist),"traveltime_error":stdev(dtlist)* error_scale}
 
     def sample(self,traveltime_outlierbounds=None):
