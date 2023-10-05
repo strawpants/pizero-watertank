@@ -1,11 +1,15 @@
+{% load static tailwind_tags %}
 <!DOCTYPE html>
 <html lang="en">
+<link rel="stylesheet" href="{% static 'style.css' %}">
 <head>
-    {% comment %}<link rel="stylesheet" href="style.css">{% endcomment %}
-    <title>{% block title %}My amazing site{% endblock %}</title>
+    <title>{% block title %}Wetcave{% endblock %}</title>
+    {% tailwind_css %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
 </head>
 
-<body>
+<body class="bg-gray-50 font-sans leading-normal tracking-normal">
+    {% include "header.html" %}
     {% comment %}<div id="sidebar">{% endcomment %}
         {% comment %}{% block sidebar %}{% endcomment %}
         {% comment %}<ul>{% endcomment %}
@@ -15,8 +19,10 @@
         {% comment %}{% endblock %}{% endcomment %}
     {% comment %}</div>{% endcomment %}
 
-    <div id="content">
-        {% block content %}{% endblock %}
+    <div id="contentbox">
+        {{content|safe}}
+        {% comment %}{% block content %}{% endblock %}{% endcomment %}
     </div>
+    {% include "footer.html" %}
 </body>
 </html>
