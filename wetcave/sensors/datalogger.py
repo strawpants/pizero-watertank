@@ -35,8 +35,9 @@ def start_logging(sampling=60):
     while True:
         logger.info("Taking new sensor sample")
         sdict=sensorscol.sample(ttimeoutlierbound)
-        #Reject outliers falling ca 20cm (2 way) from previous estimate
-        ttimeoutlierbound=[sdict["traveltime"]-500,sdict["traveltime"]+500]
+        #Update outlier bound in order to reject outliers falling ca 20cm (2 way) from previous estimate
+        if "traveltime" in sdict:
+            ttimeoutlierbound=[sdict["traveltime"]-500,sdict["traveltime"]+500]
         sample=SensorData(**sdict)
         sample.save()
         time.sleep(sampling)
