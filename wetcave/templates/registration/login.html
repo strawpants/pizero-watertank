@@ -1,9 +1,13 @@
 {% extends "base.html" %}
 {% block title %} Wetcave login{% endblock %}
-{% block content %}
+{% block header %}
+{% endblock %}
+{% block contentblock %}
+<div class="fixed h-full w-full flex items-center justify-center">
 <form method="post">
   {% csrf_token %}
   {{ form.as_p }}
-  <button type="submit">Log In to the wetcave</button>
+  <button class="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit" >Log in to the Wetcave</button>
 </form>
+</div>
 {% endblock %}

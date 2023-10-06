@@ -9,20 +9,16 @@
 </head>
 
 <body class="bg-gray-50 font-sans leading-normal tracking-normal">
+    {% block header %}
     {% include "header.html" %}
-    {% comment %}<div id="sidebar">{% endcomment %}
-        {% comment %}{% block sidebar %}{% endcomment %}
-        {% comment %}<ul>{% endcomment %}
-            {% comment %}<li><a href="/">Home</a></li>{% endcomment %}
-            {% comment %}<li><a href="/blog/">Blog</a></li>{% endcomment %}
-        {% comment %}</ul>{% endcomment %}
-        {% comment %}{% endblock %}{% endcomment %}
-    {% comment %}</div>{% endcomment %}
+    {% endblock %}
 
+    {% block contentblock %}
     <div id="contentbox">
         {{content|safe}}
         {% comment %}{% block content %}{% endblock %}{% endcomment %}
     </div>
+    {% endblock %}
     {% include "footer.html" %}
 </body>
 </html>
