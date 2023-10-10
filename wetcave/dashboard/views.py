@@ -27,7 +27,7 @@ def waterlevelPlot():
     
 
     #Update layout 
-    fig.update_layout(title_text = 'Tank water level]',
+    fig.update_layout(title_text = 'Tank water level',
                       xaxis_title = 'time',
                       yaxis_title = 'Range [cm]')
     

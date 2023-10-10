@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %} Wetcave Settings{% endblock %}
+{% block contentblock %}
+<div id="contentbox" class="fixed h-full w-full flex items-center justify-center">
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_div }}
+  <button class="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit" >Save settings</button>
+</form>
+</div>
+{% endblock %}

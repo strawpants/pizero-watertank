@@ -40,6 +40,7 @@ ALLOWED_HOSTS = ['wetcave','wetcave.wobbly.earth','127.0.0.1']
 INSTALLED_APPS = [
     'remotecontrol.apps.RemotecontrolConfig',
     'dashboard.apps.DashboardConfig',
+    'settings.apps.SettingsConfig',
     'sensors.apps.SensorsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
