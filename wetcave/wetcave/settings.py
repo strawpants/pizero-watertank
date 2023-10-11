@@ -28,8 +28,9 @@ environ.Env.read_env(os.path.join(PRIVATE_DIR, '.env'))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY')
 
+ADMIN_ENABLED=env('ADMIN_ENABLED') == "True"
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG') == "True"
 
 ALLOWED_HOSTS = ['wetcave','wetcave.wobbly.earth','127.0.0.1']
 #ALLOWED_HOSTS = ['0.0.0.0']

@@ -25,11 +25,10 @@ urlpatterns = [
         path("dashboard/", include("dashboard.urls")),
         path("", RedirectView.as_view(pattern_name='dashboard:index')),
         path("settings/", include("settings.urls")),
-        path('admin/', admin.site.urls),
         path("accounts/", include("django.contrib.auth.urls")),
         path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('favicon.png'))),
         path("__reload__/", include("django_browser_reload.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-
-
+if settings.ADMIN_ENABLED is True:
+    urlpatterns += [path('admin/', admin.site.urls),]
