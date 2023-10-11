@@ -1,12 +1,12 @@
 from django.db import models
 
 class SensorData(models.Model):
-    traveltime = models.FloatField("2-way traveltime in microseconds")
-    traveltime_error = models.FloatField("Error of 2-way traveltime in microseconds")
-    pressure = models.FloatField("Pressure in hPa")
-    pressure_error = models.FloatField("Error of pressure in hPa")
-    temperature = models.FloatField("Temperature in degrees Celsius")
-    temperature_error = models.FloatField("Error of Temperature in degrees Celsius")
+    traveltime = models.FloatField("2-way traveltime in microseconds",null=True,blank=True)
+    traveltime_error = models.FloatField("Error of 2-way traveltime in microseconds",null=True,blank=True)
+    pressure = models.FloatField("Pressure in hPa",null=True,blank=True)
+    pressure_error = models.FloatField("Error of pressure in hPa",null=True,blank=True)
+    temperature = models.FloatField("Temperature in degrees Celsius",null=True,blank=True)
+    temperature_error = models.FloatField("Error of Temperature in degrees Celsius",null=True,blank=True)
     epoch = models.DateTimeField("Observation time")
 
 class LoggerState(models.Model):
