@@ -7,7 +7,7 @@ class SensorData(models.Model):
     pressure_error = models.FloatField("Error of pressure in hPa",null=True,blank=True)
     temperature = models.FloatField("Temperature in degrees Celsius",null=True,blank=True)
     temperature_error = models.FloatField("Error of Temperature in degrees Celsius",null=True,blank=True)
-    epoch = models.DateTimeField("Observation time")
+    epoch = models.DateTimeField("Observation time",db_index=True)
 
 class LoggerState(models.Model):
     class Action(models.IntegerChoices):

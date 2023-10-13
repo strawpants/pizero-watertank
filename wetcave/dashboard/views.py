@@ -32,7 +32,7 @@ def waterlevelPlot(sounderHeight):
     #Update layout 
     fig.update_layout(title_text = 'Tank water level',
             xaxis_title = 'time',
-                      yaxis_title = 'height [cm]')
+            yaxis_title = 'height [cm]',template="plotly_dark")
     
     #Turn graph object into local plotly graph
     plotly_plot_obj = plot({'data': fig}, output_type='div')
