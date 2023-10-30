@@ -66,7 +66,7 @@ class SensorCollector:
         GPIO.output(self.sounderpin,GPIO.HIGH)
         usleep(10)
         GPIO.output(self.sounderpin,GPIO.LOW)
-        GPIO.setup(self.sounderpin, GPIO.IN)
+        GPIO.setup(self.sounderpin, GPIO.IN,pull_up_down = GPIO.PUD_DOWN)
 
         t0 = time.time()
         count = 0
