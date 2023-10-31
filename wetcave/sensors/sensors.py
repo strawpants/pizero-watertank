@@ -60,37 +60,30 @@ class SensorCollector:
             return {"pressure":pres,"temperature":temp,"pressure_error":presstd,"temperature_error":tempstd}
 
     def sampleRangeSingle(self):
+        #To initiate a measurement start by sending a pulse to the pin as output 
         GPIO.setup(self.sounderpin, GPIO.OUT)
+        
         GPIO.output(self.sounderpin,GPIO.LOW)
         usleep(2)
         GPIO.output(self.sounderpin,GPIO.HIGH)
         usleep(10)
         GPIO.output(self.sounderpin,GPIO.LOW)
+        
+        #turn the pin in an input pin and wait for a pulse (and compute the length of the pulse)
         GPIO.setup(self.sounderpin, GPIO.IN,pull_up_down = GPIO.PUD_DOWN)
-
-        t0 = time.time()
-        count = 0
-        while count < _TIMEOUT1:
-            if GPIO.input(self.sounderpin):
-                break
-            count += 1
-        if count >= _TIMEOUT1:
+        
+        riseDetected=GPIO.wait_for_edge(self.sounderpin, GPIO.RISING,timeout=100)
+        if not riseDetected:
             return None
 
-        t1 = time.time()
-        count = 0
-        while count < _TIMEOUT2:
-            if not GPIO.input(self.sounderpin):
-                break
-            count += 1
-        if count >= _TIMEOUT2:
+        t1=time.time()
+
+        fallDetected=GPIO.wait_for_edge(self.sounderpin, GPIO.FALLING,timeout=100)
+        
+        if not fallDetected:
             return None
+        t2=time.time()
 
-        t2 = time.time()
-
-        dt = int((t1 - t0) * 1000000)
-        if dt > 530:
-            dt=None
         traveltime=t2-t1
         return traveltime*1e6
 

@@ -13,6 +13,14 @@ def airpump_ctrl(switchOn=True,pin=socketlow_ctrlpin):
         print("stopping airpump")
         GPIO.output(pin, GPIO.HIGH)
 
+def waterpump_ctrl(switchOn=True,pin=sockettop_ctrlpin):
+    if switchOn:
+        print("starting waterpump")
+        GPIO.output(pin, GPIO.LOW)
+    else:
+        print("stopping waterpump")
+        GPIO.output(pin, GPIO.HIGH)
+
 
 def set_up():
     GPIO.setmode(GPIO.BCM)
@@ -21,14 +29,14 @@ def set_up():
 
 def main():
     set_up()
-    airpump_ctrl(True)
+    waterpump_ctrl(True)
     
     while True:
         try:
             time.sleep(2)
         except KeyboardInterrupt:
-            airpump_ctrl(False)
-            print("KeyboardInterrupt, shutting down airpump")
+            waterpump_ctrl(False)
+            print("KeyboardInterrupt, shutting down pump")
             GPIO.cleanup()
             sys.exit(0)
 
