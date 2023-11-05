@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'tailwind',
     'theme',
     'django_browser_reload',
-    ]
+    'django_plotly_dash.apps.DjangoPlotlyDashConfig',
+]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -63,7 +64,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_browser_reload.middleware.BrowserReloadMiddleware',
-]
+    'django_plotly_dash.middleware.BaseMiddleware',
+    ]
 
 ROOT_URLCONF = 'wetcave.urls'
 
@@ -167,3 +169,6 @@ INTERNAL_IPS = [
 ]
 
 TAILWIND_APP_NAME = 'theme'
+
+# Plotly Dash options
+X_FRAME_OPTIONS = 'SAMEORIGIN'
