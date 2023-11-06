@@ -1,22 +1,20 @@
 {% load static tailwind_tags %}
 <!DOCTYPE html>
 <html lang="en">
-<link rel="stylesheet" href="{% static 'style.css' %}">
 <head>
     <title>{% block title %}Wetcave{% endblock %}</title>
     {% tailwind_css %}
     <link rel="stylesheet" href="{% static 'style.css' %}">
 </head>
 
-<body class="bg-gray-50 font-sans leading-normal tracking-normal">
+<body class="bg-gray-50 font-sans leading-normal tracking-normal flex flex-col min-h-screen">
     {% block header %}
     {% include "header.html" %}
     {% endblock %}
 
     {% block contentblock %}
-    <div id="contentbox">
+    <div id="contentbox" class="flex-grow flex-1">
         {{content|safe}}
-        {% comment %}{% block content %}{% endblock %}{% endcomment %}
     </div>
     {% endblock %}
     {% include "footer.html" %}

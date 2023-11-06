@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %} Wetcave Settings{% endblock %}
 {% block contentblock %}
-<div id="contentbox" class="fixed h-full w-full flex items-center justify-center">
+<div id="contentbox" clas="h-full w-full flex flex-grow items-center justify-center">
 <form method="post">
   {% csrf_token %}
   {{ form.as_div }}
