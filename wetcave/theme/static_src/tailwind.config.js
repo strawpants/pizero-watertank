@@ -5,6 +5,9 @@
  * https://unpkg.com/browse/tailwindcss@latest/stubs/defaultConfig.stub.js
  */
 
+
+const colors = require('tailwindcss/colors')
+/** @type {import('tailwindcss').Config} */
 module.exports = {
     content: [
         /**
@@ -42,6 +45,26 @@ module.exports = {
         // '../../**/*.py'
     ],
     theme: {
+        colors:{
+            transparent: 'transparent',
+            current: 'currentColor',
+            'white': '#ffffff',
+            'slate': colors.slate,
+            'nile': {
+                DEFAULT: '#7bd5fe',
+                '50': '#f0f9ff',
+                '100': '#e0f2fe',
+                '200': '#b9e6fe',
+                '300': '#7bd5fe',
+                '400': '#35bffb',
+                '500': '#0ba7ec',
+                '600': '#0086ca',
+                '700': '#016ba3',
+                '800': '#055b87',
+                '900': '#0b4b6f',
+                '950': '#083654',
+            },
+        },
         extend: {},
     },
     plugins: [

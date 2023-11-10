@@ -3,11 +3,26 @@
 {% block header %}
 {% endblock %}
 {% block contentblock %}
-<div class="fixed h-full w-full flex items-center justify-center">
-<form method="post">
+<div class="w-full h-full flex flex-col items-center justify-center">
+  <div class="flex h-100 m-10 p-10 lg:h-32 lg:p-2">
+        <img src="/static/wetcave.svg" class="w-full h-full" alt="Wetcave Logo">
+  </div>
+  <div class="flex">
+    <h1 class="mb-4 text-6xl md:text-l font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-xl dark:text-white"> Welcome to the Wetcave</h2>
+  </div>
+  <form method="post">
   {% csrf_token %}
-  {{ form.as_p }}
-  <button class="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit" >Log in to the Wetcave</button>
+  <div class="flex flex-row ">
+   <div class="flex flex-col dark:text-white text-4xl lg:text-lg items-center min-h-full">
+      <label class="flex my-4 " for="{{ form.username.id_for_label }}">Username: </label> 
+      <label class="flex my-4 " for="{{ form.password.id_for_label }}">Password: </label> 
+   </div> 
+   <div class="flex flex-col dark:text-white min-h-full ">
+      <input class="flex my-2 rounded border-2 text-4xl lg:text-lg border-nile focus:border-nile-700 text-slate-900" type="text" name="username" autofocus="" autocapitalize="none" autocomplete="username" maxlength="{{ form.username.max_length }}" required="" id="{{ form.username.id_for_label }}">
+      <input class="flex my-2 rounded border-2 text-4xl lg:text-lg border-nile focus:border-nile-700 text-slate-900 " type="password" name="password" autofocus="" autocapitalize="none" autocomplete="password" maxlength="{{ form.password.max_length }}" required="" id="{{ form.password.id_for_label }}">
+    </div> 
+  </div>
+  <button class="flex bg-nile hover:bg-nile-700 text-white text-4xl lg:text-lg font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit" >Log in</button>
 </form>
 </div>
 {% endblock %}

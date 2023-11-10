@@ -34,7 +34,8 @@
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1" />
+     inkscape:current-layer="layer1"
+     showgrid="false" />
   <defs
      id="defs1">
     <marker
@@ -85,16 +86,16 @@
      transform="translate(-4.868905,0.47592835)">
     <path
        id="path1-7"
-       style="fill:none;stroke:#6495ed;stroke-width:9.99996;stroke-linecap:round;stroke-dasharray:none;paint-order:stroke fill markers"
+       style="fill:none;paint-order:stroke fill markers;stroke:#7bd5fe;stroke-opacity:1;stroke-width:8.2;stroke-dasharray:none;stroke-linecap:round"
        d="m 100.92726,52.257751 c -5.650348,5.511111 -13.313861,8.607218 -21.304658,8.607218 -7.990797,0 -15.654309,-3.096107 -22.89846,-10.114125 -7.24415,-7.018015 -14.907663,-10.114123 -22.89846,-10.114123 -7.990795,0 -15.654312,3.096111 -22.898463,10.114123"
        sodipodi:nodetypes="cscsc" />
     <path
-       style="fill:none;stroke:#6495ed;stroke-width:8;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:1.4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#ArrowWideRounded)"
+       style="fill:none;marker-end:url(#ArrowWideRounded);stroke:#7bd5fe;stroke-opacity:1;stroke-width:8.2;stroke-dasharray:none;stroke-linecap:round"
        d="M 33.927239,56.465934 V 93.454719"
        id="path1"
        sodipodi:nodetypes="cc" />
     <path
-       style="fill:#6495ed;fill-opacity:0;stroke:#6495ed;stroke-width:8;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:1.4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#ArrowWideRounded-2)"
+       style="fill:#6495ed;fill-opacity:0;marker-end:url(#ArrowWideRounded-2);stroke:#7bd5fe;stroke-opacity:1;stroke-width:8.2;stroke-dasharray:none;stroke-linecap:round"
        d="M 77.92724,44.698881 V 7.7100926"
        id="path1-3"
        sodipodi:nodetypes="cc" />
