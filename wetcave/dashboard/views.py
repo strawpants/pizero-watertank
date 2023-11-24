@@ -10,7 +10,64 @@ from django_pandas.io import read_frame
 import numpy as np
 from datetime import datetime,timedelta
 from settings.models import TankConfig
+import dash
+from dash import dcc, html
+from django_plotly_dash import DjangoDash
+
+
 speedofsoundconstant=340 #m/s
+
+
+def query_sensordata():
+    settings=TankConfig.objects.first()
+    
+    since=datetime.now()-timedelta(days=30)
+    qry=SensorData.objects.filter(epoch__gte=since)
+    sensordf=read_frame(qry)
+    #augment dataframe
+    sensordf['vsound']=20.05*(273.16 + sensordf['temperature']).apply(np.sqrt)
+    sensordf['deltavsound']=speedofsoundconstant-20.05*(273.16 + sensordf['temperature']).apply(np.sqrt)
+    sensordf['waterlevel']= settings.sounderheight*1e2-sensordf['traveltime']*sensordf['vsound']*1e-4/2
+    return sensordf
+
+
+df=query_sensordata()
+
+
+# app = DjangoDash('WetcaveDash')   # replaces dash.Dash
+
+# app.layout = html.Div([
+    # dcc.Graph(id='graph-sensor-data'),
+    # dcc.RadioItems(
+        # id='dropdown-color',
+        # options=[{'label': c, 'value': c.lower()} for c in ['Red', 'Green', 'Blue']],
+        # value='red'
+    # ),
+    # html.Div(id='output-color',className="text-nile"),
+    # dcc.RadioItems(
+        # id='dropdown-size',
+        # options=[{'label': i,
+                  # 'value': j} for i, j in [('L','large'), ('M','medium'), ('S','small')]],
+        # value='medium'
+    # ),
+    # html.Div(id='output-size')
+
+# ])
+
+# @app.callback(
+    # dash.dependencies.Output('output-color', 'children'),
+    # [dash.dependencies.Input('dropdown-color', 'value')])
+# def callback_color(dropdown_value):
+    # return "The selected color is %s." % dropdown_value
+
+# @app.callback(
+    # dash.dependencies.Output('output-size', 'children'),
+    # [dash.dependencies.Input('dropdown-color', 'value'),
+     # dash.dependencies.Input('dropdown-size', 'value')])
+# def callback_size(dropdown_color, dropdown_size):
+    # return "The chosen T-shirt is a %s %s one." %(dropdown_size,
+                                                  # dropdown_color)
+
 
 def waterlevelPlot(sounderHeight):
     #get since last week
@@ -45,4 +102,5 @@ def dashboard(request):
     # retrieve the settings
     settings=TankConfig.objects.first()
     plotlyhtml=waterlevelPlot(settings.sounderheight) 
+    # return render(request,"dashboard.html")
     return render(request,"dashboard.html",context={"content":plotlyhtml})

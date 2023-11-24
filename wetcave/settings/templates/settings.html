@@ -4,8 +4,19 @@
 <div id="contentbox" clas="h-full w-full flex flex-grow items-center justify-center">
 <form method="post">
   {% csrf_token %}
-  {{ form.as_div }}
-  <button class="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit" >Save settings</button>
+  <div class="flex flex-col text-slate-500 items-center text-xl lg:text-sm">
+    {% for field in form %}
+    <div class="fieldWrapper">
+        {{ field.errors }}
+        {{ field.label_tag }} {{ field }}
+        {% if field.help_text %}
+        <p class="help">{{ field.help_text|safe }}</p>
+        {% endif %}
+    </div>
+{% endfor %}
+  {% comment %}{{ form.as_div }}{% endcomment %}
+  <button class="bg-nile hover:bg-nile-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit" >Save settings</button>
+  </div>
 </form>
 </div>
 {% endblock %}
