@@ -2,8 +2,8 @@
 
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-from sensors.models import SensorData
+from django.shortcuts import render,redirect
+from sensors.models import Range,Temperature, Pressure, Rain
 from plotly.offline import plot
 import plotly.graph_objs as go
 from django_pandas.io import read_frame
@@ -18,20 +18,20 @@ from django_plotly_dash import DjangoDash
 speedofsoundconstant=340 #m/s
 
 
-def query_sensordata():
-    settings=TankConfig.objects.first()
+# def query_sensordata():
+    # settings=TankConfig.objects.first()
     
-    since=datetime.now()-timedelta(days=30)
-    qry=SensorData.objects.filter(epoch__gte=since)
-    sensordf=read_frame(qry)
-    #augment dataframe
-    sensordf['vsound']=20.05*(273.16 + sensordf['temperature']).apply(np.sqrt)
-    sensordf['deltavsound']=speedofsoundconstant-20.05*(273.16 + sensordf['temperature']).apply(np.sqrt)
-    sensordf['waterlevel']= settings.sounderheight*1e2-sensordf['traveltime']*sensordf['vsound']*1e-4/2
-    return sensordf
+    # since=datetime.now()-timedelta(days=30)
+    # qry=SensorData.objects.filter(epoch__gte=since)
+    # sensordf=read_frame(qry)
+    # #augment dataframe
+    # sensordf['vsound']=20.05*(273.16 + sensordf['temperature']).apply(np.sqrt)
+    # sensordf['deltavsound']=speedofsoundconstant-20.05*(273.16 + sensordf['temperature']).apply(np.sqrt)
+    # sensordf['waterlevel']= settings.sounderheight*1e2-sensordf['traveltime']*sensordf['vsound']*1e-4/2
+    # return sensordf
 
 
-df=query_sensordata()
+# df=query_sensordata()
 
 
 # app = DjangoDash('WetcaveDash')   # replaces dash.Dash
@@ -72,15 +72,15 @@ df=query_sensordata()
 def waterlevelPlot(sounderHeight):
     #get since last week
     since=datetime.now()-timedelta(days=7)
-    qry=SensorData.objects.filter(epoch__gte=since)
+    qry=Range.objects.filter(epoch__gte=since)
     sensordf=read_frame(qry)
-    sensordf['vsound']=20.05*(273.16 + sensordf['temperature']).apply(np.sqrt)
-    sensordf['deltavsound']=speedofsoundconstant-20.05*(273.16 + sensordf['temperature']).apply(np.sqrt)
-    sensordf['waterlevel']= sounderHeight*1e2-sensordf['traveltime']*sensordf['vsound']*1e-4/2
+    # sensordf['vsound']=20.05*(273.16 + sensordf['temperature']).apply(np.sqrt)
+    # sensordf['deltavsound']=speedofsoundconstant-20.05*(273.16 + sensordf['temperature']).apply(np.sqrt)
+    # sensordf['waterlevel']= sounderHeight*1e2-sensordf['traveltime']*sensordf['vsound']*1e-4/2
     fig=go.Figure()
 
-    # fig.add_trace(go.Line(name = 'Range', x = sensordf['epoch'], y = sensordf['traveltime']*speedofsoundconstant*1e-4/2))
-    fig.add_trace(go.Scatter(name = 'Water level (Temp corrected)', x = sensordf['epoch'], y =sensordf['waterlevel'],mode="lines+markers"))
+    fig.add_trace(go.Line(name = 'Range', x = sensordf['time'], y = sensordf['traveltime']*speedofsoundconstant*1e-4/2))
+    # fig.add_trace(go.Scatter(name = 'Water level (Temp corrected)', x = sensordf['epoch'], y =sensordf['waterlevel'],mode="lines+markers"))
 
     # fig.add_trace(go.Line(name = 'Delta Range (Temp effect)', x = sensordf['epoch'], y = sensordf['traveltime']*sensordf['deltavsound']*1e-4/2))
     # fig.add_trace(go.Line(name = 'Delta Range (Temp effect)', x = sensordf['epoch'], y = sensordf['pressure']))
@@ -100,7 +100,11 @@ def waterlevelPlot(sounderHeight):
 @login_required()
 def dashboard(request):
     # retrieve the settings
-    settings=TankConfig.objects.first()
+    settings=TankConfig.objects #.first()
+    if settings.count() == 0:
+        settings=TankConfig()
+    else:
+        settings=settings.first()
     plotlyhtml=waterlevelPlot(settings.sounderheight) 
     # return render(request,"dashboard.html")
     return render(request,"dashboard.html",context={"content":plotlyhtml})

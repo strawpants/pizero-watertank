@@ -5,5 +5,6 @@ from . import views
 app_name = 'settings'
 
 urlpatterns = [
-    path("", views.settings, name="settings"),
+        path("", views.settings, name="settings"),
+        path("<int:formid>", views.settings, name="settings"),
 ]
