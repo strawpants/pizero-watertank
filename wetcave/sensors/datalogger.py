@@ -1,10 +1,11 @@
 import psutil
 import paho.mqtt.client as mqtt
+import paho.mqtt.properties as properties
 from sensors.models import Pressure,Temperature,Range,Rain
 from settings.models import MQTTConfig
 # from sensors.sensors import SensorCollector
 from logging import getLogger
-from datetime import datetime
+from datetime import datetime,timezone
 import os
 import time
 import signal
@@ -37,30 +38,48 @@ def add_range(data):
     item=Range.objects.create(traveltime=data["value"],traveltime_error=data["std"],time=data["time"])
 
 def add_rain(data):
-    item=Range.objects.create(time=data["time"])
+    item=Rain.objects.create(time=data["time"],validflag=data['valid'])
 
 topicmap={"barotemp/pressure":add_pressure,"barotemp/temp":add_temperature,"range/traveltime":add_range,"tippingbucket/tip":add_rain}
 
 def process_message(client, userdata, message):
-    data=json.loads(message.payload,object_hook=parse_time)
     sensortopic=message.topic.removeprefix(userdata["sensortopic"])
     try:
+        data=json.loads(message.payload,object_hook=parse_time)
         topicmap[sensortopic](data)
     except:
-        logger.warning(f"No topic mapping found for {message.topic}")
+        if message.topic.endswith(userdata["clientoffline"]):
+            if message.payload == b"LOST_CONNECTION":
+                tstamp=datetime.now(timezone.utc)
+            else:
+                tstamp=datetime.fromisoformat(message.payload.decode('utf-8'))
+            #insert null entries so connection loss is registered
+            item=Pressure.objects.create(time=tstamp)
+            item=Temperature.objects.create(time=tstamp)
+            item=Range.objects.create(time=tstamp)
+            item=Rain.objects.create(time=tstamp,validflag=0)
+        else:
+            logger.warning(f"No topic mapping found for {message.topic}")
 
     
 
 def on_connect(client, userdata, flags, reason_code, properties=None):
     logger.info(f"Subscribing to {userdata['sensortopic']}#")
-    client.subscribe(topic=userdata["sensortopic"]+"#")
-
+    client.subscribe(topic=userdata["sensortopic"]+"#",qos=userdata["qos"])
+    client.subscribe(topic=userdata["clientoffline"],qos=userdata["qos"])
 
 def start_logging():
     #retrieve the MQTT configuration
     mqttconf=MQTTConfig.objects.first()
     transport="tcp"
-    client = mqtt.Client(client_id=mqttconf.clientid,transport=transport, protocol=mqtt.MQTTv5,userdata={"sensortopic":mqttconf.topic+"/sensor/"})
+    clean_start=False
+    qos=1
+    keepalive=60
+    connect_properties = properties.Properties(properties.PacketTypes.CONNECT)
+    connect_properties.SessionExpiryInterval = 86400
+    client = mqtt.Client(client_id=mqttconf.clientid,transport=transport, 
+                         protocol=mqtt.MQTTv5,
+                         userdata={"sensortopic":mqttconf.topic+"/sensor/","qos":qos,"clientoffline":f"{mqttconf.topic}/{mqttconf.pubclientid}/offline"})
     
     client.username_pw_set(mqttconf.user,mqttconf.password)
     if mqttconf.port == 8883:
@@ -69,8 +88,7 @@ def start_logging():
     client.on_connect=on_connect
     client.on_message=process_message
 
-    client.connect(mqttconf.broker,port=mqttconf.port,keepalive=60);
-
+    client.connect(mqttconf.broker,port=mqttconf.port,keepalive=keepalive,clean_start=clean_start,properties=connect_properties);
     client.loop_forever() 
 
 

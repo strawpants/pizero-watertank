@@ -18,6 +18,7 @@ class Range(models.Model):
 
 class Rain(models.Model):
     time = models.DateTimeField("Time of tip event",db_index=True)
+    validflag = models.IntegerField("Validity of tip event (set to zero to insert a discontinuity)",default=1)
 
 # class LoggerState(models.Model):
     # class Action(models.IntegerChoices):

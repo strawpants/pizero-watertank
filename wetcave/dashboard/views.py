@@ -72,14 +72,14 @@ speedofsoundconstant=340 #m/s
 def waterlevelPlot(sounderHeight):
     #get since last week
     since=datetime.now()-timedelta(days=7)
-    qry=Range.objects.filter(epoch__gte=since)
+    qry=Range.objects.filter(time__gte=since)
     sensordf=read_frame(qry)
     # sensordf['vsound']=20.05*(273.16 + sensordf['temperature']).apply(np.sqrt)
     # sensordf['deltavsound']=speedofsoundconstant-20.05*(273.16 + sensordf['temperature']).apply(np.sqrt)
     # sensordf['waterlevel']= sounderHeight*1e2-sensordf['traveltime']*sensordf['vsound']*1e-4/2
     fig=go.Figure()
 
-    fig.add_trace(go.Line(name = 'Range', x = sensordf['time'], y = sensordf['traveltime']*speedofsoundconstant*1e-4/2))
+    fig.add_trace(go.Line(name = 'Range', x = sensordf['time'], y = sounderHeight*1e2-sensordf['traveltime']*speedofsoundconstant*1e-4/2,mode="lines+markers"))
     # fig.add_trace(go.Scatter(name = 'Water level (Temp corrected)', x = sensordf['epoch'], y =sensordf['waterlevel'],mode="lines+markers"))
 
     # fig.add_trace(go.Line(name = 'Delta Range (Temp effect)', x = sensordf['epoch'], y = sensordf['traveltime']*sensordf['deltavsound']*1e-4/2))
