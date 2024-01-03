@@ -19,9 +19,12 @@ env = environ.Env()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 PRIVATE_DIR = os.path.join(BASE_DIR.parent,'wetcave-private')
+if os.path.exists(PRIVATE_DIR):
+    # this is intended to be used when developing
+    environ.Env.read_env(os.path.join(PRIVATE_DIR, '.env'))
 
-environ.Env.read_env(os.path.join(PRIVATE_DIR, '.env'))
 
+DATA_ROOT=env('DATA_ROOT')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -94,7 +97,7 @@ WSGI_APPLICATION = 'wetcave.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': PRIVATE_DIR+'/wetcave.sqlite3',
+        'NAME': os.path.join(DATA_ROOT,'wetcave.sqlite3'),
     }
 }
 
@@ -134,14 +137,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, "../wetcave-static/")
+STATIC_ROOT = env('STATIC_ROOT')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static/img"),
     os.path.join(BASE_DIR, "static/css"),
 ]
 
 MEDIA_URL = 'media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, "../wetcave-media/")
+MEDIA_ROOT = env('MEDIA_ROOT')
 
 LOGOUT_REDIRECT_URL = '/'
 
