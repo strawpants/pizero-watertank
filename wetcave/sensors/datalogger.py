@@ -82,7 +82,7 @@ def start_logging():
                          userdata={"sensortopic":mqttconf.topic+"/sensor/","qos":qos,"clientoffline":f"{mqttconf.topic}/{mqttconf.pubclientid}/offline"})
     
     client.username_pw_set(mqttconf.user,mqttconf.password)
-    if mqttconf.port == 8883:
+    if mqttconf.usessl:
         client.tls_set(cert_reqs=ssl.CERT_REQUIRED
                        )
     client.on_connect=on_connect
