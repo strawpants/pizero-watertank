@@ -5,11 +5,11 @@ class TankConfig(models.Model):
     deadzone = models.FloatField("Height of the deadzone [m]")
     normalzone = models.FloatField("height of the top of the normal zone (above it will overflow)[m]")
     sounderheight = models.FloatField("Height of the range sensor above the bottom of the tank [m]",default=1.0)
-    soundergpiopin = models.IntegerField("Raspberry gpio-pin number of the ultrasounder ranger")
-    relay1name = models.CharField("Descriptive Name for the first Relay attached RELAY1",max_length=30)
-    relay1gpiopin = models.IntegerField("Raspberry gpio-pin number for controlling the first relay RELAY1")
-    relay2name = models.CharField("Descriptive Name for the second Relay attached RELAY2",max_length=30)
-    relay2gpiopin = models.IntegerField("Raspberry gpio-pin number for controlling the second relay RELAY2")
+    # soundergpiopin = models.IntegerField("Raspberry gpio-pin number of the ultrasounder ranger")
+    # relay1name = models.CharField("Descriptive Name for the first Relay attached RELAY1",max_length=30)
+    # relay1gpiopin = models.IntegerField("Raspberry gpio-pin number for controlling the first relay RELAY1")
+    # relay2name = models.CharField("Descriptive Name for the second Relay attached RELAY2",max_length=30)
+    # relay2gpiopin = models.IntegerField("Raspberry gpio-pin number for controlling the second relay RELAY2")
     mmtip = models.FloatField("mm/m2 of rain per tipping event of the tipping bucket",default=0.34384)
 
 class TankLevels(models.Model):
@@ -21,10 +21,10 @@ class TankLevels(models.Model):
 class TankForm(ModelForm):
     class Meta:
         model = TankConfig
-        fields = ["deadzone", "normalzone", "sounderheight","mmtip"] #"soundergpiopin","relay1name","relay1gpiopin","relay2name","relay2gpiopin"]
+        fields = ["deadzone", "normalzone", "sounderheight","mmtip"] #,"soundergpiopin","relay1name","relay1gpiopin","relay2name","relay2gpiopin"]
 
 class MQTTConfig(models.Model):
-    broker = models.CharField("MQTT broker",max_length=50)
+    broker = models.CharField("MQTT broker",max_length=50, default="mqtt.server")
     port = models.IntegerField("MQTT port used",default=8883)
     topic = models.CharField("Root topic to subscribe to",default="wetcave",max_length=30)
     qos = models.IntegerField("QOS level of subscribing messages",default=1)
