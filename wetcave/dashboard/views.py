@@ -15,6 +15,7 @@ import dash
 from dash import dcc, html
 from django_plotly_dash import DjangoDash
 from django.utils import timezone 
+import pandas as pd
 
 speedofsoundconstant=340 #m/s
 current_tz = timezone.get_current_timezone()
@@ -80,30 +81,25 @@ def initPressureTempFig():
 def initRainFig(settings):
     
     mmtip=settings.mmtip
-    since=datetime.now(timezone.utc)-timedelta(days=15)
+    since=datetime.now(timezone.utc)-timedelta(days=7)
     qryR=Rain.objects.filter(time__gte=since)
     sensordf=read_frame(qryR)
     sensordf["time"]=sensordf["time"].dt.tz_convert(current_tz.key)
+    sensordf.set_index('time',inplace=True)
+    #set nan values where validflag is not present
     sensordf.validflag.where(sensordf.validflag == 1,inplace=True)
-    sensordf["rain_accum"]=sensordf['validflag'].cumsum()*mmtip
-
+    freq='1h'
     # Construct get the rain rate
-    rainrate=3600*sensordf.rain_accum.diff()/(sensordf.time.diff().dt.total_seconds())
-    timerate=sensordf.time-sensordf.time.diff()/2
-    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    dfrainrate=sensordf.groupby(pd.Grouper(freq=freq)).validflag.sum()*mmtip
 
-    fig.add_trace(go.Line(name = 'Rain accumulated', x = sensordf.time, y = sensordf.rain_accum,line_color=wc_color))
-    
-    fig.add_trace(go.Bar(name = 'Rain rate', x = timerate, y = rainrate),secondary_y=True)
-     
+    fig=go.Figure()
+    # fig = make_subplots(specs=[[{"secondary_y": True}]])
+    fig.add_trace(go.Bar(name = 'Rain [mm/m2] ', x = dfrainrate.index, y = dfrainrate,marker_color=wc_color))
+
     #Update layout 
-    fig.update_layout(title_text = 'Accumulated rain since',
+    fig.update_layout(title_text = 'Rain',
             xaxis_title = 'time',
             yaxis_title = 'Rain [mm/m2]',template="plotly_dark")
-    
-    fig.update_yaxes(title_text="Rain rate [mm/m2/hour]", secondary_y=True)
-    
-
     return fig
 
 
@@ -156,7 +152,10 @@ def dashboard(request):
     app_wl.layout = html.Div([
         dcc.Graph(figure=initwaterlevelFig(settings),id='water-level-data', responsive=True),
         dcc.Graph(figure=initPressureTempFig(),id='pres-temp-data', responsive=True),
-        dcc.Graph(figure=initRainFig(settings),id='rain-data', responsive=True)],
+        dcc.Graph(figure=initRainFig(settings),id='rain-data', responsive=True),
+        html.Button('hourly', id='hourly-rain', disabled=True,className=''),
+        html.Button('daily', id='daily-rain'),
+        html.Button('weekly', id='weekly-rain')],
         id="wc_app")
     return render(request,"dashboard.html")
 #return render(request,"dashboard.html",context={"content":plotlyhtml})

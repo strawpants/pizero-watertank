@@ -76,7 +76,7 @@ def start_logging():
     qos=1
     keepalive=60
     connect_properties = properties.Properties(properties.PacketTypes.CONNECT)
-    connect_properties.SessionExpiryInterval = 86400
+    connect_properties.SessionExpiryInterval = 20*86400
     client = mqtt.Client(client_id=mqttconf.clientid,transport=transport, 
                          protocol=mqtt.MQTTv5,
                          userdata={"sensortopic":mqttconf.topic+"/sensor/","qos":qos,"clientoffline":f"{mqttconf.topic}/{mqttconf.pubclientid}/offline"})
