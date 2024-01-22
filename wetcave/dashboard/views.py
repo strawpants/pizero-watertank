@@ -11,15 +11,24 @@ from django_pandas.io import read_frame
 import numpy as np
 from datetime import datetime,timedelta
 from settings.models import TankConfig
-import dash
-from dash import dcc, html
+from dash import dcc, html, Patch,callback,dependencies
 from django_plotly_dash import DjangoDash
 from django.utils import timezone 
 import pandas as pd
 
+
 speedofsoundconstant=340 #m/s
 current_tz = timezone.get_current_timezone()
 wc_color="#7bd5fe"
+
+def getsettings():
+    settings=TankConfig.objects 
+    if settings.count() == 0:
+        settings=TankConfig()
+    else:
+        settings=settings.first()
+
+    return settings
 
 def initwaterlevelFig(settings):
     
@@ -78,28 +87,78 @@ def initPressureTempFig():
 
     return fig
 
-def initRainFig(settings):
+def loadRainData(freq="Hourly"):
     
-    mmtip=settings.mmtip
-    since=datetime.now(timezone.utc)-timedelta(days=7)
+    if freq == "Daily":
+        since=datetime.now(timezone.utc)-timedelta(days=2*7)
+        grpr=pd.Grouper(freq='1d')
+    
+    elif freq == "Weekly":
+        since=datetime.now(timezone.utc)-timedelta(days=4*7)
+        grpr=pd.Grouper(freq='7d')
+    else:
+        since=datetime.now(timezone.utc)-timedelta(days=7)
+        grpr=pd.Grouper(freq='1h')
+
+    # breakpoint()
     qryR=Rain.objects.filter(time__gte=since)
     sensordf=read_frame(qryR)
     sensordf["time"]=sensordf["time"].dt.tz_convert(current_tz.key)
     sensordf.set_index('time',inplace=True)
     #set nan values where validflag is not present
     sensordf.validflag.where(sensordf.validflag == 1,inplace=True)
-    freq='1h'
-    # Construct get the rain rate
-    dfrainrate=sensordf.groupby(pd.Grouper(freq=freq)).validflag.sum()*mmtip
+    
+    settings=getsettings()
 
+    # Construct get the rain rate
+    dfrainrate=sensordf.groupby(grpr).validflag.sum()*settings.mmtip
+    return dfrainrate
+
+def initRainFig(settings):
+    
+    mmtip=settings.mmtip
+    dfrainrate=loadRainData(mmtip) 
     fig=go.Figure()
     # fig = make_subplots(specs=[[{"secondary_y": True}]])
     fig.add_trace(go.Bar(name = 'Rain [mm/m2] ', x = dfrainrate.index, y = dfrainrate,marker_color=wc_color))
 
     #Update layout 
-    fig.update_layout(title_text = 'Rain',
+    fig.update_layout(title_text="Rain Rate",
             xaxis_title = 'time',
             yaxis_title = 'Rain [mm/m2]',template="plotly_dark")
+    
+    # fig.update_layout(
+        # updatemenus=[
+            # dict(
+                # type = "buttons",
+                # direction = "left",
+                # buttons=list([
+                    # dict(
+                        # args=["type", "surface"],
+                        # label="3D Surface",
+                        # method="restyle"
+                    # ),
+                    # dict(
+                        # args=["type", "heatmap"],
+                        # label="Heatmap",
+                        # method="restyle"
+                    # )
+                # ]),
+                # pad={"r": 10, "t": 10},
+                # showactive=True,
+                # x=0.05,
+                # xanchor="left",
+                # y=1.15,
+                # yanchor="top"
+            # ),
+        # ]
+        # ,template="plotly_dark")
+
+    # fig.update_layout(annotations=[
+        # dict(text="Rain rate", showarrow=False,
+                             # x=0, y=1.08, yref="paper", align="left")
+    # ])
+
     return fig
 
 
@@ -123,11 +182,17 @@ def initRainFig(settings):
 app_wl = DjangoDash('TankLevel')  
 
 
-# @app.callback(
-    # dash.dependencies.Output('output-color', 'children'),
-    # [dash.dependencies.Input('dropdown-color', 'value')])
-# def callback_color(dropdown_value):
-    # return "The selected color is %s." % dropdown_value
+@app_wl.callback(
+    dependencies.Output('rain-data', 'figure'),
+    dependencies.Input('rain-freq', 'value'),
+    prevent_initial_call=True)
+def cb_changerain(rain_freq):
+    figPatch=Patch()
+    dfrainrate=loadRainData(rain_freq)
+    figPatch["data"][0]["y"] = dfrainrate
+    figPatch["data"][0]["x"] = dfrainrate.index
+
+    return figPatch
 
 # @app.callback(
     # dash.dependencies.Output('output-size', 'children'),
@@ -142,20 +207,14 @@ app_wl = DjangoDash('TankLevel')
 @login_required()
 def dashboard(request):
     # get settings
-    
-    settings=TankConfig.objects 
-    if settings.count() == 0:
-        settings=TankConfig()
-    else:
-        settings=settings.first()
+    settings=getsettings()
 
+    dccstyle={"color":"white","font-family":'"Open Sans", verdana'}
     app_wl.layout = html.Div([
         dcc.Graph(figure=initwaterlevelFig(settings),id='water-level-data', responsive=True),
         dcc.Graph(figure=initPressureTempFig(),id='pres-temp-data', responsive=True),
-        dcc.Graph(figure=initRainFig(settings),id='rain-data', responsive=True),
-        html.Button('hourly', id='hourly-rain', disabled=True,className=''),
-        html.Button('daily', id='daily-rain'),
-        html.Button('weekly', id='weekly-rain')],
+        dcc.RadioItems(['Hourly','Daily','Weekly'], 'Hourly',id="rain-freq",inline=True,style=dccstyle,persistence=True),
+        dcc.Graph(figure=initRainFig(settings),id='rain-data', responsive=True)],
         id="wc_app")
     return render(request,"dashboard.html")
 #return render(request,"dashboard.html",context={"content":plotlyhtml})
